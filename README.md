@@ -11,7 +11,7 @@ source .venv/bin/activate
 
 ### Select games
 
-Games need to be selected in order to stage them for data collection. Passing the --games argument prompts the user to select games to collect data for. The list of games with live statistics available is scraped from the source. A cache of the games list is saved in the project folder: `games_list.json`. If the cached list is outdated or not available then games will be scraped otherwise the cached list is used.
+Games need to be selected in order to stage them for data collection. Passing the `--games` argument prompts the user to select games to collect data for. The list of games with live statistics available is scraped from the source. A cache of the games list is saved in the project folder: `games_list.json`. If the cached list is outdated or not available then games will be scraped otherwise the cached list is used.
 
 ```bash
 python3 main.py --games
@@ -21,7 +21,7 @@ python3 main.py --games
 
 ### Select schedule
 
-Two data collection schedules are available. The 'at 90+ minutes' schedule sends significantly less requests to the source's server and will still collect minute by minute game data. It is recommended to use this schedule if you do not need access to live data. Functionality for alternative schedules could be added upon request.
+Two data collection schedules are available. The 'at 90+ minutes' schedule sends significantly less requests to the source server and will still collect minute by minute game data. It is recommended to use this schedule if you do not need access to live data. Functionality for alternative schedules could be added upon request.
 
 #### Data refresh schedules
 
@@ -54,7 +54,7 @@ python3 main.py --check
 
 ### Commit selection
 
-After deciding on the games to collect dat for, the `--commit` argument can be passed to commit the selection. Data for past games will be scraped immediately and upcoming games will be scheduled. The schedule is decided by the user.
+After deciding on the games to collect data for, the `--commit` argument can be passed to commit the selection. Data for past games will be scraped immediately and upcoming games will be scheduled. The schedule is decided by the user.
 
 ```bash
 python3 main.py --commit
@@ -72,7 +72,7 @@ python3 main.py --clear
 
 ### Cron table
 
-Once a schedule has been committed the jobs are written to the user's cron table. An additional job is scheduled to clear the cron table 3 hours after the last match's kick off time _(only clears jobs created by this app)_.
+Once a schedule has been committed the jobs are written to the user's cron table. An additional job is scheduled to clear the cron table 3 hours after the last match's kick off time _(it only clears jobs created by this app)_.
 
 ```bash
 crontab -l
