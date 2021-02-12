@@ -5,10 +5,7 @@ json/
 docs/
 games/
 logs/
-fb-data.pem
-fb-data.ppk
-dl_config.txt
-fbdata.py
+keys/
 config.json
 games_list.json
 user_selection.json
