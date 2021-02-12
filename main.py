@@ -9,6 +9,7 @@ import os
 
 import scrape
 
+from pyvirtualdisplay import Display
 from datetime import datetime, timedelta
 from crontab import CronTab
 from random import uniform
@@ -345,7 +346,10 @@ def cron_job(config, match_id):
             file_name = guid.replace('/','').replace(':','')
         else:
             pass
+    display = Display(visible=0, size=(1024, 768))
+    display.start()
     scrape.Games(config).refresh_json((file_name,match_id))
+    display.stop()
     logging.info(f'>> {file_name} updated')
 
 
@@ -392,7 +396,10 @@ if __name__ == "__main__":
     if args.games:
         for i in range(2):
             try:
+                display = Display(visible=0, size=(1024, 768))
+                display.start()
                 games_list = Update(config).games_list()
+                display.stop()
                 game_data = games_list["GAME_DATA"]
                 Schedule(config).prompt(game_data)
             except WebDriverException:

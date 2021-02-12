@@ -11,7 +11,6 @@ from selenium.common.exceptions import NoSuchElementException
 
 from json.decoder import JSONDecodeError
 
-from pyvirtualdisplay import Display
 from bs4 import BeautifulSoup
 from datetime import datetime
 from datetime import timedelta
@@ -43,9 +42,6 @@ class Games:
         replaces last checked with datetime now 
         """
         # scrape match table html
-        display = Display(visible=0, size=(1024, 768))
-        display.start()
-        sleep(1.5)
         self.driver.get(self.url)
         sleep(uniform(2,3))
         self.driver.save_screenshot(f'{self.test}ss0.png') # for testing pyvirtualdisplay
@@ -69,7 +65,6 @@ class Games:
         match_table_html = match_table.get_attribute('innerHTML')
         self.driver.save_screenshot(f'{self.test}ss1.png') # for testing pyvirtualdisplay
         self.driver.close()
-        display.stop()
         last_checked = datetime.utcnow()
         # parse html to json
         soup = BeautifulSoup(match_table_html, 'html.parser')
@@ -152,9 +147,6 @@ class Games:
         takes a tuple of (guid, match_id)
         saves match data in /project_path/games/{guid}.json
         """
-        display = Display(visible=0, size=(1024, 768))
-        display.start()
-        sleep(1.5)
         url = self.config['URL_2'] % match[1]
         self.driver.get(url)
         content = self.driver.page_source
@@ -170,4 +162,3 @@ class Games:
             print(f'>>        failed to refresh {match[0]}')
             logging.info(f'>> failed to refresh {match[0]}')
         self.driver.close()
-        display.stop()
