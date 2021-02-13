@@ -1,5 +1,6 @@
 import logging
 import re
+import os
 import json
 
 from selenium import webdriver
@@ -64,7 +65,8 @@ class Games:
         match_table = self.driver.find_element(By.XPATH, '//*[@id="livescores"]/div/div')
         match_table_html = match_table.get_attribute('innerHTML')
         self.driver.save_screenshot(f'{self.test}ss1.png') # for testing pyvirtualdisplay
-        self.driver.close()
+        self.driver.quit()
+        os.system("pkill chromium")
         last_checked = datetime.utcnow()
         # parse html to json
         soup = BeautifulSoup(match_table_html, 'html.parser')
@@ -84,7 +86,6 @@ class Games:
         ## append values
         upcoming_kickoffs = []
         t_minus = last_checked - timedelta(minutes=180)
-        i = 0
         for row in soup.find_all("div"):            
             match_centre_link = row.find('a', class_="match-link rc live")
             match_preview_link = row.find('a', class_="match-link rc preview")
@@ -161,4 +162,5 @@ class Games:
         except JSONDecodeError:
             print(f'>>        failed to refresh {match[0]}')
             logging.info(f'>> failed to refresh {match[0]}')
-        self.driver.close()
+        self.driver.quit()
+        os.system("pkill chromium")

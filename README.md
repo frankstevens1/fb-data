@@ -11,7 +11,7 @@ source .venv/bin/activate
 
 ### Select games
 
-Games need to be selected in order to stage them for data collection. Passing the --games argument prompts the user to select games to collect data for. The list of games with live statistics available is scraped from the source. A cache of the games list is saved in the project folder: `games_list.json`. If the cached list is outdated or not available then games will be scraped otherwise the cached list is used.
+Games need to be selected in order to stage them for data collection. Passing the `--games` argument prompts the user to select games to collect data for. The list of games with live statistics available is scraped from the source. A cache of the games list is saved in the project folder: `games_list.json`. If the cached list is outdated or not available then games will be scraped otherwise the cached list is used.
 
 ```bash
 python3 main.py --games
@@ -21,7 +21,7 @@ python3 main.py --games
 
 ### Select schedule
 
-Two data collection schedules are available. The 'at 90+ minutes' schedule sends significantly less requests to the source's server and will still collect minute by minute game data. It is recommended to use this schedule if you do not need access to live data. Functionality for alternative schedules could be added upon request.
+Two data collection schedules are available. The _'at 90+ minutes'_ schedule sends significantly less requests to the source's server and will still collect minute by minute game data. It is recommended to use this schedule if you do not need access to live data. Functionality for alternative schedules could be added upon request.
 
 #### Data refresh schedules
 
@@ -42,6 +42,14 @@ Two data collection schedules are available. The 'at 90+ minutes' schedule sends
 |ko + 165 min (ST)       |✓   |✓|
 |ko + 180 min            |✓   |✓|
 
+### Commit selection
+
+After deciding on the games to collect dat for, the `--commit` argument can be passed to commit the selection. Data for past games will be scraped immediately and upcoming games will be scheduled. The schedule is decided by the user.
+
+```bash
+python3 main.py --commit
+```
+
 ### View games selected
 
 To view the games that have been selected for data collection pass the `--check` argument to print out the current selection.
@@ -51,14 +59,6 @@ python3 main.py --check
 ```
 
 ![gif](https://drive.google.com/uc?export=view&id=1rGqww4dRgizU37OZMmDuuhR9W98vSQAL)
-
-### Commit selection
-
-After deciding on the games to collect dat for, the `--commit` argument can be passed to commit the selection. Data for past games will be scraped immediately and upcoming games will be scheduled. The schedule is decided by the user.
-
-```bash
-python3 main.py --commit
-```
 
 ### Clear all
 
@@ -100,11 +100,50 @@ Application logs are saved in the logs directory:
 cd /home/fb-data/logs
 ```
 
-## Setup on on EC2 instance from Amazon Machine Image (AMI)
+## Setup locally on Windows Subsystem for Linux (WSL)
 
-Follow the steps described in this [article](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/get-set-up-for-amazon-ec2.html#create-a-key-pair) to create a keypair.
+### WSL version 1
 
-### SSH Connection
+The application ca be run locally from WSL 1 unfortunately from WSL 2 is not (yet) possible. You can change a working WSL 2 instance to version 1 by running:
+
+```powershell
+wsl --set-version <Distro> 1
+```
+
+To get the distro name, run:
+
+```powershell
+wsl -l -v
+```
+
+### Chrome and chromedriver
+
+Although we are running the app from our WSL ubuntu vm, the chromedriver and chrome will be activated within Windows. Therefore, Google Chrome and Chromedriver should be installed on windows and they should be of the same version.
+
+To check Google Chrome version paste the following into the address bar in Chrome: `chrome://settings/help`
+
+Then download Chromedriver of the same version from [here](https://chromedriver.chromium.org/home).
+
+Save the chromedriver.exe ...
+
+## Setup on on EC2
+
+ An EC2 instance can be launched from an Amazon Machine Image (AMI) that I've given your account permission to use. You should find it under Images > AMIs and then filter for Private AMIs.
+
+### Launch EC2 instance from AMI
+
+Find the AMI shared with you & launch an instance from it. The setup wizard will ask for several settings, the defaults will suffice. The settings that need to be set to gain access to the instance via SSH are described below:
+
+* Under tab '6. Configure Security Group', add the settings as shown in the screenshot below:
+    1. Add an HTTP rule with _Custom_ source and `0.0.0.0/0, ::/0` value
+    2. Add an HTTPS rule with _Custom_ source and `0.0.0.0/0, ::/0` value
+    3. Add an SSH rule & change the source to _My IP_ and your IP Address will be populated as the value, this is the IP Address that will be granted SSH connection to your EC2 instance.
+
+![step3](https://drive.google.com/uc?export=view&id=1IjcCsYo9YkOUIUR-MSjf33wfcQPGuMr_)
+
+* Assign an existing keypair to the instance or create a new one. This keypair can be used to gain access to the EC2 instance via SSH. Save it in a safe place.
+
+### Setup SSH client
 
 The client is your local machine. Use powershell (_run as administrator_) to perform the following checks.
 
@@ -148,31 +187,3 @@ ssh -i C:/path/to/mykeypair.pem ubuntu@my_instance_public_dns_name
 
 Replace `C:/path/to/mykeypair.pem` with the path to key pair [created](###Create-kaypair).
 Replace `my_instance_public_dns_name` with the Public IPv4 DNS found under instance summary in [AWS console](https://console.aws.amazon.com/).
-
-## Userdata for AMI launch template
-
-```bash
-#!/bin/bash
-apt update
-apt upgrade -y
-apt install -y python3-pip
-apt-get install -y python3-venv
-apt-get install -y unzip openjdk-8-jre-headless xvfb libxi6 libgconf-2-4 xdg-utils xserver-xephyr tigervnc-standalone-server xfonts-base
-apt install -y chromium-browser
-apt install -y chromium-chromedriver
-chown root:root /usr/bin/chromedriver
-chmod 0755 /usr/bin/chromedriver
-chmod a+rwx /home
-cd /home
-git clone https://github.com/frankstevens1/fb-data.git
-chmod a+rwx /home/fb-data
-cd fb-data
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-deactivate
-# FILELINK
-# FILENAME
-wget $FILELINK -O $FILENAME
-```
