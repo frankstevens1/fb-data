@@ -113,6 +113,44 @@ To get available distro names, run:
 wsl -l -v
 ```
 
+### 2. Project directory & python virtual environment
+
+Ensure python3 is installed (on Ubuntu, this is installed out of the box). Verify by running:
+
+```bash
+python3 --version
+```
+
+If version 3.x was returned, we are good to go. Now we need to install python pip and venv:
+
+```bash
+sudo apt -y install python-pip
+sudo apt -y install python-venv
+```
+
+Now we are ready to setup the project directory. Change to the directory where you wish to store the project. Within WSL we can access Windows file system, a recommended location would be:
+
+```bash
+cd /mnt/c/Users/YOUR_WINDOWS_USERNAME
+```
+
+You will be able to access all application files (such as game data) from Windows file explorer. To copy the repository to the current directory, run:
+
+```bash
+git clone https://github.com/frankstevens1/fb-data.git
+```
+
+The directory `fb-data` has been created with all project contents. Now we need to create a python virtual environment and install all dependencies:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+The project folder and a python virtual environment have been created.
+
 ### 2. Chrome and chromedriver
 
 Although we are running the app from our WSL ubuntu vm, the driver and browser of choice will be activated within Windows. Therefore, the browser and driver should be installed on Windows and they should be of the same version.
