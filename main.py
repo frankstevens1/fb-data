@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # parse arguments
     args = parse_arguments()
     # change to project directory
-    project_dir =  os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(project_dir)
     # open configuration settings
     with open('./config.json') as json_file:

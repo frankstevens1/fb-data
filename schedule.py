@@ -167,7 +167,11 @@ class Schedule:
         returns a tuple of (triggers, game_time)
         triggers are hour, minute combinations at which to trigger game data updates
         """
-        game_time = date_time + timedelta(hours=1) # remove for utc environment
+        if self.config["LOCAL"] == 1:
+            td = datetime.now() - datetime.utcnow()
+            game_time = date_time + timedelta(hours=round(td.seconds / 3600, 1))
+        else:
+            game_time = date_time
         ninety = game_time + timedelta(hours=1, minutes=15)
         triggers = [(ninety.hour, ninety.minute)]
         t = ninety
@@ -182,8 +186,12 @@ class Schedule:
         returns a tuple of (triggers, game_time)
         triggers are hour, minute combinations at which to trigger game data updates
         """
+        if self.config["LOCAL"] == 1:
+            td = datetime.now() - datetime.utcnow()
+            game_time = date_time + timedelta(hours=round(td.seconds / 3600, 1))
+        else:
+            game_time = date_time
         triggers = []
-        game_time = date_time + timedelta(hours=1) # remove for utc environment
         hours = []
         for i in range(3):
             hours.append(game_time + timedelta(hours=i+1))
