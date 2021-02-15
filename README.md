@@ -4,15 +4,15 @@
 
 This guide covers setup on Windows 10 with WSL and on an EC2 instance on AWS. Choose the desired setup:
 
-### [Local setup](##setup-on-wsl)
+### [Local setup](#setup-on-wsl)
 
-### [AWS EC2 setup](##setup-on-ec2)
+### [AWS EC2 setup](#setup-on-ec2)
 
 ---
 
 ## Usage
 
-This section assumes you have succesfully completed setup on [WSL](##setup-on-wsl) or [EC2](##setup-on-ec2).
+This section assumes you have succesfully completed setup on [WSL](#setup-on-wsl) or [EC2](#setup-on-ec2).
 
 Before interacting with the script always change to the directory to which fb-data was copied & activate the python virtual environment:
 
