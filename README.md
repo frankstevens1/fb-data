@@ -97,7 +97,7 @@ Game data is saved in `./fb-data/games` directory.
 
 Application logs are saved in the `./fb-data/logs` directory.
 
-## Setup locally on Windows Subsystem for Linux (WSL) <a name="SetupLocal"><\a>
+## Setup locally on Windows Subsystem for Linux (WSL) <a name="SetupLocal">
 
 ### 1. WSL version
 
@@ -147,7 +147,7 @@ A config file is required to use fb-data, it is a json file that contains the ur
 
 - "USER_NAME": your username on WSL, run `whoami` in bash to return your username.
 
-## Setup on EC2 <a name="SetupEC2"><\a>
+## Setup on EC2 <a name="SetupEC2">
 
  An EC2 instance can be launched from an Amazon Machine Image (AMI). If you are ready to begin setup on EC2, let me know, then I'll give your account permission to use the AMI. There are costs involved with hosting an AMI, so I will take down the AMI after 24h, so launch an image from it within 24h from requesting.
 
