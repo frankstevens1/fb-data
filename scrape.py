@@ -30,12 +30,14 @@ class Games:
         self.options.add_argument('--disable-blink-features=AutomationControlled')
         self.options.add_argument('--disable-dev-shm-usage')
         self.options.add_argument(f"user-agent={self.config['USER_AGENT']}")
-        # self.options.add_argument('--headless')
-        # self.options.add_argument("--window-size=1920,1080")
         self.options.add_argument('--no-sandbox')
-        self.driver = webdriver.Chrome(executable_path=self.config['CHROMEDRIVER_PATH'], options=self.options)
+        if self.config["LOCAL"] == 0:
+            chromedriver = '/usr/bin/chromedriver'
+        else:
+            chromedriver = f'{os.getcwd()}/chromedriver/chromedriver.exe'
+        self.driver = webdriver.Chrome(executable_path=chromedriver, options=self.options)
         self.url = self.config['URL_1']
-        self.test = f'{self.config["PROJECT_PATH"]}test/'
+        self.test = f'{os.getcwd()}/test/'
         
     def get_game_list(self):
         """
@@ -45,7 +47,7 @@ class Games:
         # scrape match table html
         self.driver.get(self.url)
         sleep(uniform(2,3))
-        self.driver.save_screenshot(f'{self.test}ss0.png') # for testing pyvirtualdisplay
+        self.driver.save_screenshot(f'{self.test}ss0.png') # to check if request blocked by server
         ## start retry block
         for i in range(3):
             try:
@@ -64,9 +66,8 @@ class Games:
         ## end retry block
         match_table = self.driver.find_element(By.XPATH, '//*[@id="livescores"]/div/div')
         match_table_html = match_table.get_attribute('innerHTML')
-        self.driver.save_screenshot(f'{self.test}ss1.png') # for testing pyvirtualdisplay
+        self.driver.save_screenshot(f'{self.test}ss1.png') # to check if request blocked by server
         self.driver.quit()
-        os.system("pkill chromium")
         last_checked = datetime.utcnow()
         # parse html to json
         soup = BeautifulSoup(match_table_html, 'html.parser')
@@ -140,7 +141,11 @@ class Games:
         last_start = max(upcoming_kickoffs)
         game_data_dict['NEXT_START'] = next_start.strftime("%d/%m/%Y %H:%M:%S")
         game_data_dict['LAST_START'] = last_start.strftime("%d/%m/%Y %H:%M:%S")
-        logging.info(f'>> {self.config["PROJECT_PATH"]}games_list.json updated')
+        logging.info(f'>> {os.getcwd()}/games_list.json updated')
+        if self.config["LOCAL"] == 1:
+            os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
+        else:
+            os.system("pkill chromium >> /dev/null 2>&1")
         return game_data_dict
 
     def refresh_json(self, match: tuple):
@@ -156,11 +161,14 @@ class Games:
         file_name = match[0]
         try:
             json_data = json.loads(content_string)
-            with open(f'{self.config["PROJECT_PATH"]}games/{file_name}.json', 'w+') as json_file:
+            with open(f'{os.getcwd()}/games/{file_name}.json', 'w+') as json_file:
                 json.dump(json_data, json_file, indent=4)
             json_file.close()
         except JSONDecodeError:
             print(f'>>        failed to refresh {match[0]}')
             logging.info(f'>> failed to refresh {match[0]}')
         self.driver.quit()
-        os.system("pkill chromium")
+        if self.config["LOCAL"] == 1:
+            os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
+        else:
+            os.system("pkill chromium >> /dev/null 2>&1")
