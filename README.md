@@ -4,15 +4,15 @@
 
 This guide covers setup on Windows 10 with WSL and on an EC2 instance on AWS. Choose the desired setup:
 
-### [Local setup](##setup-on-wsl)
+### [Local setup](#setup-on-wsl)
 
-### [AWS EC2 setup](##setup-on-ec2)
+### [AWS EC2 setup](#setup-on-ec2)
 
 ---
 
 ## Usage
 
-This section assumes you have succesfully completed setup on [WSL](##setup-on-wsl) or [EC2](##setup-on-ec2).
+This section assumes you have succesfully completed setup on [WSL](#setup-on-wsl) or [EC2](#setup-on-ec2).
 
 Before interacting with the script always change to the directory to which fb-data was copied & activate the python virtual environment:
 
@@ -259,7 +259,7 @@ If necessary refer to [AWS documentation](https://docs.aws.amazon.com/AWSEC2/lat
 ssh -i C:/path/to/mykeypair.pem ubuntu@my_instance_public_dns_name
 ```
 
-Replace `C:/path/to/mykeypair.pem` with the path to key pair [created](###Create-kaypair).
+Replace `C:/path/to/mykeypair.pem` with the path to key pair [created in step 1](#1-launch-ec2-instance-from-ami).
 Replace `my_instance_public_dns_name` with the Public IPv4 DNS found under instance summary in [AWS console](https://console.aws.amazon.com/).
 
 ### 4. Configuration settings (aws)
