@@ -2,21 +2,28 @@
 
 ## Setup
 
-### [Local setup](#SetupLocal)
+This guide covers setup on Windows 10 with WSL and on an EC2 instance on AWS. Choose the desired setup:
 
-### [AWS EC2 setup](#SetupEC2)
+### [Local setup](##setup-on-wsl)
+
+### [AWS EC2 setup](##setup-on-ec2)
+
+---
 
 ## Usage
 
-Before interacting with the script always change to the directory where fb-data is located & activate python virtual environment:
+This section assumes you have succesfully completed setup on [WSL](##setup-on-wsl) or [EC2](##setup-on-ec2).
+
+Before interacting with the script always change to the directory to which fb-data was copied & activate the python virtual environment:
 
 ```bash
-cd /PATH/TO/fb-data && source .venv/bin/activate
+cd /c/mnt/users/YOUR_WINDOWS_USERNAME/fb-data
+source .venv/bin/activate
 ```
 
 ### Select games
 
-Games need to be selected in order to stage them for data collection. Passing the `--games` argument prompts the user to select games to collect data for. If a cached list of games is available and up to date then that cached list will be used. If not, then a list of games with live statistics available is scraped from the source and a cache of the games list is saved in the fb-data folder: `games_list.json`.
+Passing the `--games` argument prompts the user to select games to collect data for. If a cached list of games is available and up to date then the cached list will be used. If not, a list of games with live statistics available is scraped from the source and a cache is saved in the fb-data directory as `games_list.json`.
 
 ```bash
 python3 main.py --games
@@ -27,8 +34,6 @@ python3 main.py --games
 ### Select schedule
 
 Two data collection schedules are available. The _'at 90+ minutes'_ schedule sends significantly less requests to the source's server and will still retrieve minute by minute game data. It is recommended to use this schedule if you do not need access to the data while game is live.
-
-#### Data refresh schedules
 
 |time            |at 90+ minutes |every 15 minutes|
 |---                     |---: |---:|
@@ -49,7 +54,7 @@ Two data collection schedules are available. The _'at 90+ minutes'_ schedule sen
 
 ### Commit selection
 
-After deciding on the games to collect data for, the `--commit` argument can be passed to commit the selection. Once committed, data for past games will be retrieved immediately and upcoming games will be scheduled. The schedule is decided by the user.
+After selecting the games, passing `--commit` will commit the selection. Once committed, data for past games will be retrieved immediately and upcoming games will be scheduled.
 
 ```bash
 python3 main.py --commit
@@ -57,7 +62,7 @@ python3 main.py --commit
 
 ### View games selected
 
-To view the games that have been selected for data collection pass the `--check` argument to print out the current selection.
+To view the games that have been selected for data collection pass `--check` to print out the current selection.
 
 ```bash
 python3 main.py --check
@@ -83,7 +88,7 @@ Once a schedule has been committed, the jobs are written to the user's cron tabl
 crontab -l
 ```
 
-Check status or start/stop the system's cron service. Cron should be active in order for scheduled jobs to run.
+Check status or start/stop the system's cron service. **Cron should be active in order for scheduled jobs to run!**
 
 ```bash
 sudo service cron status
@@ -97,82 +102,85 @@ Game data is saved in `./fb-data/games` directory.
 
 Application logs are saved in the `./fb-data/logs` directory.
 
-## Setup locally on Windows Subsystem for Linux (WSL) <a name="SetupLocal">
+---
+
+## Setup on WSL
 
 ### 1. WSL version
 
-The application can be run locally from using WSL 1 with any Ubuntu distro. Unfortunately WSL 2 is not (yet) possible. You can change a working WSL 2 instance to version 1 by running:
+The fb-data application can be run locally from using WSL 1 with any Ubuntu distro. Unfortunately WSL 2 is not (yet) possible. You can change an active WSL 2 instance to version 1 by running (insert the appropirate distro name):
 
 ```powershell
 wsl --set-version <Distro> 1
 ```
 
-To get available distro names, run:
+To get available Distro names, run:
 
 ```powershell
 wsl -l -v
 ```
 
-### 2. Project directory & python virtual environment
+### 2. Python, project directory & virtual environment
 
-Ensure python3 is installed (on Ubuntu, this is installed out of the box). Verify by running:
+- Ensure python3 is installed (on Ubuntu, this is installed out of the box). Verify by running:
 
 ```bash
 python3 --version
 ```
 
-If version 3.x was returned, we are good to go. Now we need to install python pip and venv:
+- If Python 3.x.x was returned, we are good to go.
+Now we can  install python pip and venv (package manager and virutal environment):
 
 ```bash
-sudo apt -y install python-pip
-sudo apt -y install python-venv
+sudo apt -y install python-pip && sudo apt -y install python-venv
 ```
 
-Now we are ready to setup the project directory. Change to the directory where you wish to store the project. Within WSL we can access Windows file system, a recommended location would be:
+- Now we are ready to setup the project directory. Change to the directory where you wish to store the project. Within WSL we can access Windows file system, a recommended location would be (replace your windows username):
 
 ```bash
 cd /mnt/c/Users/YOUR_WINDOWS_USERNAME
 ```
 
-You will be able to access all application files (such as game data) from Windows file explorer. To copy the repository to the current directory, run:
+- You will be able to access all application files (such as game data collected) from the Windows file explorer. To copy the repository to the current directory, run:
 
 ```bash
 git clone https://github.com/frankstevens1/fb-data.git
 ```
 
-The directory `fb-data` has been created with all project contents. Now we need to create a python virtual environment and install all dependencies:
+- The directory `fb-data` has been copied to the current directory with all project contents. Now we need to create a python virtual environment and install all dependencies:
 
 ```bash
+cd fb-data
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-The project folder and a python virtual environment have been created.
-
-### 2. Chrome and chromedriver
+### 3. Chrome and chromedriver
 
 Although we are running the app from our WSL ubuntu vm, the driver and browser of choice will be activated within Windows. Therefore, the browser and driver should be installed on Windows and they should be of the same version.
 
-This guide uses Chrome and chromedriver. If you choose to use the same setup as this guide then simply run the Google Chrome installer found in `./fb-data/chromedriver/ChromeSetup.exe` and then move on to next step.
+This guide uses Chrome and chromedriver. If you choose to use the same setup as this guide then simply run the Google Chrome installer found in `./fb-data/chromedriver/ChromeSetup.exe` to install/update Google Chrome and then move on to next step.
 
-Should you wish to use another browser, you will need to download the matching driver for that browser. Google chrome installer and chromedriver of the same version can be found in the  folder.
+Should you wish to use another browser, you will need to download the matching driver for that browser.
 
-To check Google Chrome version paste the following into the address bar in Chrome: `chrome://settings/help`
+### 4. Configuration settings (local)
 
-Chromedrivers can be downloaded from [here](https://chromedriver.chromium.org/home).
+Some configuration settings need to be set in order to use fb-data. The project directory contains a json file with the urls of the data source and some additional user data. I will provide you with the correct values for "URL_1" & "URL_2"
 
-### 3. Configuration settings
+- To edit `config_sample.json` in notepad run:
 
-A config file is required to use fb-data, it is a json file that contains the urls of the data source and user data. The file is structured as follows and I will provide you with a link to download it with the appropriate URLs populated.
+```bash
+notepad.exe config.json
+```
 
-- config.json should be saved in fb-data directory.
+- `config_sample.json` is structured as follows, replace the values for "URL_1", "URL_2" & "USER_NAME" and save it as `config.json`.
 
 ```json
 {
-    "URL_1": "https://datasource/",
-    "URL_2": "https://datasource2/",
+    "URL_1": "PASTE URL_1 THAT I PROVIDED HERE",
+    "URL_2": "PASTE URL_2 THAT I PROVIDED HERE",
     "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
     "USER_NAME": "ubuntu",
     "LOCAL": 1
@@ -185,7 +193,11 @@ A config file is required to use fb-data, it is a json file that contains the ur
 
 - "USER_NAME": your username on WSL, run `whoami` in bash to return your username.
 
-## Setup on EC2 <a name="SetupEC2">
+**You are now ready to [use](#usage) fb-data!**
+
+---
+
+## Setup on EC2
 
  An EC2 instance can be launched from an Amazon Machine Image (AMI). If you are ready to begin setup on EC2, let me know, then I'll give your account permission to use the AMI. There are costs involved with hosting an AMI, so I will take down the AMI after 24h, so launch an image from it within 24h from requesting.
 
@@ -250,7 +262,7 @@ ssh -i C:/path/to/mykeypair.pem ubuntu@my_instance_public_dns_name
 Replace `C:/path/to/mykeypair.pem` with the path to key pair [created](###Create-kaypair).
 Replace `my_instance_public_dns_name` with the Public IPv4 DNS found under instance summary in [AWS console](https://console.aws.amazon.com/).
 
-### 4. Configuration settings
+### 4. Configuration settings (aws)
 
 A config file is required to use fb-data, it is a json file that contains the urls of the data source and user data. The file is structured as follows and I will provide you with a link to download it with the appropriate URLs populated.
 
@@ -258,8 +270,8 @@ A config file is required to use fb-data, it is a json file that contains the ur
 
 ```json
 {
-    "URL_1": "https://datasource/",
-    "URL_2": "https://datasource2/",
+    "URL_1": "PASTE URL_1 THAT I PROVIDED HERE",
+    "URL_2": "PASTE URL_2 THAT I PROVIDED HERE",
     "USER_AGENT": "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/87.0.4280.88 Chrome/87.0.4280.88 Safari/537.36",
     "USER_NAME": "ubuntu",
     "LOCAL": 0

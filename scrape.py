@@ -155,6 +155,7 @@ class Games:
         """
         url = self.config['URL_2'] % match[1]
         self.driver.get(url)
+        self.driver.save_screenshot(f'{self.test}ss3.png') # to check if request blocked by server
         content = self.driver.page_source
         content_string = content.replace('<html><head></head><body>', '')
         content_string = content_string.replace('</body></html>', '')
