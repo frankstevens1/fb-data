@@ -21,6 +21,10 @@ cd /c/mnt/users/YOUR_WINDOWS_USERNAME/fb-data
 source .venv/bin/activate
 ```
 
+### Help
+
+`python3 main.py --help`
+
 ### Select games
 
 Passing the `--games` argument prompts the user to select games to collect data for. If a cached list of games is available and up to date then the cached list will be used. If not, a list of games with live statistics available is scraped from the source and a cache is saved in the fb-data directory as `games_list.json`.
@@ -132,7 +136,7 @@ python3 --version
 Now we can  install python pip and venv (package manager and virutal environment):
 
 ```bash
-sudo apt -y install python-pip && sudo apt -y install python-venv
+sudo apt -y install python3-pip && sudo apt -y install python3-venv
 ```
 
 - Now we are ready to setup the project directory. Change to the directory where you wish to store the project. Within WSL we can access Windows file system, a recommended location would be (replace your windows username):

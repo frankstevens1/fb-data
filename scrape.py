@@ -166,7 +166,6 @@ class Games:
                 json.dump(json_data, json_file, indent=4)
             json_file.close()
         except JSONDecodeError:
-            print(f'>>        failed to refresh {match[0]}')
             logging.info(f'>> failed to refresh {match[0]}')
         self.driver.quit()
         if self.config["LOCAL"] == 1:
