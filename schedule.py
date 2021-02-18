@@ -63,7 +63,7 @@ class Update:
                 if datetime.utcnow() - last_checked  > time_delta and datetime.utcnow() < last_start:
                     games_list = self.update()
                 else:
-                    logging.info('>>> using cached games_list.json')
+                    pass
         else:
             games_list = self.update()
         return games_list
@@ -117,7 +117,6 @@ class Schedule:
         with open(f'./user_selection.json', 'w+') as outfile:
             json.dump(user_selection, outfile, indent=4)
         outfile.close()
-        logging.info(f'>> ./user_selection.json updated')
         print('''
         Selected games have been staged for data collection.
         Run --commit to commit changes, or --games to change selection.
@@ -264,7 +263,6 @@ class Schedule:
         Upcoming matches will be scraped {user_selection["REFRESH_RATE"]} after kick-off.
         Data for matches past are saved in ./games.
               ''')
-        logging.info(f'>> crontab updated')
 
     def refresh_jobs(self):
         """
@@ -341,7 +339,6 @@ class Schedule:
             scrape.Games(self.config).refresh_json(match)
         display.stop()
         self.update_crontab(matches_to_schedule)
-        logging.info('>> new schedule committed')
 
 
 def cron_job(config, match_id):
