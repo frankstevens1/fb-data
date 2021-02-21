@@ -180,7 +180,7 @@ class Schedule:
             triggers.append((t.hour, t.minute))
         return (triggers, game_time)
 
-    def fifteen_minutes(self, date_time):
+    def fifteen_minutes(self, date_time, off_set):
         """
         take utc kick off time
         returns a tuple of (triggers, game_time)
@@ -218,7 +218,7 @@ class Schedule:
             else:
                 break
             for i in range(m, lm, 15):
-                triggers.append((h.hour,i))
+                triggers.append((h.hour,i+off_set))
         return (triggers, game_time)
 
     def update_crontab(self, matches_to_schedule):
@@ -230,11 +230,13 @@ class Schedule:
         json_file.close()
         game_times = set()
         if user_selection["REFRESH_RATE"] == 'every 15 minutes': # 15 minute setting
+            i = 0
             for data in matches_to_schedule.values():
-                schedule = self.fifteen_minutes(data["DATETIME"])
+                schedule = self.fifteen_minutes(data["DATETIME"], i)
                 triggers = schedule[0]
                 game_times.add(schedule[1])
                 data["TRIGGERS"] = triggers
+                i += 1
         else: # 90+ setting
             for data in matches_to_schedule.values():
                 schedule = self.ninety_plus(data["DATETIME"])
