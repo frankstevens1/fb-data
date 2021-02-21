@@ -1,4 +1,5 @@
 import scrape
+from main import kill_all
 
 import json
 import os
@@ -276,7 +277,6 @@ class Schedule:
             user_selection = json.load(json_file)
         json_file.close()
         games_scheduled = user_selection["SCHEDULE"]
-
         my_cron = CronTab(user=self.config["USER_NAME"])
         scheduled_jobs = set()
         for job in my_cron:
@@ -340,19 +340,24 @@ class Schedule:
             for i in range(3):
                 try:
                     scrape.Games(self.config).refresh_json(match)
+                    updated = 'updated'
                 except WebDriverException:
                     logging.info(f'>> WebDriverException, retrying...')
-                    time.sleep(uniform(2,3))
+                    kill_all()
+                    time.sleep(uniform(3,5))
                     continue
                 except TimeoutException:
                     logging.info(f'>> TimeoutException, retrying...')
-                    time.sleep(uniform(2,3))
+                    kill_all()
+                    time.sleep(uniform(3,5))
                     continue
                 except Exception:
                     logging.info(traceback.format_exc())
+                    updated = 'not updated'
                     break
             else:
-                logging.info(f'>> failed to update past matches after {i+1} attempts')
+                updated = f'{match[0]} update failed after {i+1} attempts'
+            logging.info(f'>> {match[0]} {updated}')
         self.update_crontab(matches_to_schedule)
 
 def cron_job(config, match_id):
@@ -374,11 +379,13 @@ def cron_job(config, match_id):
             updated = 'updated'
         except WebDriverException:
             logging.info(f'>> WebDriverException, retrying...')
-            time.sleep(uniform(2,3))
+            kill_all()
+            time.sleep(uniform(3,5))
             continue
         except TimeoutException:
             logging.info(f'>> TimeoutException, retrying...')
-            time.sleep(uniform(2,3))
+            kill_all()
+            time.sleep(uniform(3,5))
             continue
         except Exception:
             logging.info(traceback.format_exc())
