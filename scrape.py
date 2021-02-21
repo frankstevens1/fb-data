@@ -2,6 +2,7 @@ import logging
 import re
 import os
 import json
+import psutil
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -141,8 +142,10 @@ class Games:
         if self.config["LOCAL"] == 1:
             os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
         else:
-            # os.system("pkill chromium >> /dev/null 2>&1")
-            pass
+            kill_processes = ['Xvfb', 'chromedriver', 'chrome']
+            for proc in psutil.process_iter():
+                if proc.name() in kill_processes:
+                    proc.kill()
         return game_data_dict
 
     def refresh_json(self, match: tuple):
@@ -167,5 +170,7 @@ class Games:
         if self.config["LOCAL"] == 1:
             os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
         else:
-            # os.system("pkill chromium-browser >> /dev/null 2>&1")
-            pass
+            kill_processes = ['Xvfb', 'chromedriver', 'chrome']
+            for proc in psutil.process_iter():
+                if proc.name() in kill_processes:
+                    proc.kill()
