@@ -2,7 +2,6 @@ import logging
 import re
 import os
 import json
-import psutil
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By

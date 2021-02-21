@@ -351,8 +351,6 @@ class Schedule:
                 except Exception:
                     logging.info(traceback.format_exc())
                     break
-                else:
-                    break
             else:
                 logging.info(f'>> failed to update past matches after {i+1} attempts')
         self.update_crontab(matches_to_schedule)
@@ -384,9 +382,6 @@ def cron_job(config, match_id):
             continue
         except Exception:
             logging.info(traceback.format_exc())
-            updated = 'not updated'
-            break
-        else:
             updated = 'not updated'
             break
     else:
