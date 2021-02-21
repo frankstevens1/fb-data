@@ -354,13 +354,14 @@ class Schedule:
                 except TimeoutException:
                     logging.info(f'>> TimeoutException, retrying...')
                     time.sleep(uniform(2,3))
+                    continue
                 except Exception:
                     logging.info(traceback.format_exc())
                     break
                 else:
                     break
             else:
-                logging.info(f'>> failed to update past matches after {i} attempts')
+                logging.info(f'>> failed to update past matches after {i+1} attempts')
         display.stop()
         self.update_crontab(matches_to_schedule)
 
@@ -382,10 +383,7 @@ def cron_job(config, match_id):
     for i in range(3):
         try:
             scrape.Games(config).refresh_json((file_name,match_id))
-        except JSONDecodeError:
-            logging.info(f'>> JSONDecodeError, retrying...')
-            time.sleep(uniform(5,6))
-            continue
+            updated = 'updated'
         except WebDriverException:
             logging.info(f'>> WebDriverException, retrying...')
             time.sleep(uniform(2,3))
@@ -393,14 +391,14 @@ def cron_job(config, match_id):
         except TimeoutException:
             logging.info(f'>> TimeoutException, retrying...')
             time.sleep(uniform(2,3))
+            continue
         except Exception:
             logging.info(traceback.format_exc())
+            updated = 'not updated'
             break
         else:
             break
     else:
-        logging.info(f'>> {match_id} update failed after {i} attempts')
-        display.stop()
-        sys.exit
+        logging.info(f'>> failed to update past matches after {i+1} attempts')
     display.stop()
-    logging.info(f'>> {file_name} updated')
+    logging.info(f'>> {file_name} {updated}')
