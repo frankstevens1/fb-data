@@ -142,10 +142,7 @@ class Games:
         if self.config["LOCAL"] == 1:
             os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
         else:
-            kill_processes = ['Xvfb', 'chromedriver', 'chrome']
-            for proc in psutil.process_iter():
-                if proc.name() in kill_processes:
-                    proc.kill()
+            pass
         return game_data_dict
 
     def refresh_json(self, match: tuple):
@@ -170,7 +167,4 @@ class Games:
         if self.config["LOCAL"] == 1:
             os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
         else:
-            kill_processes = ['Xvfb', 'chromedriver', 'chrome']
-            for proc in psutil.process_iter():
-                if proc.name() in kill_processes:
-                    proc.kill()
+            pass

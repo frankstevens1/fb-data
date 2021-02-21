@@ -5,6 +5,7 @@ import time
 import json
 import sys
 import os
+import psutil
 
 import schedule
 
@@ -74,6 +75,11 @@ if __name__ == "__main__":
         else:
             logging.info(f'>> games list update failed after 2 attempts')
             sys.exit()
+        if config["LOCAL"] == 0:
+            kill_processes = ['Xvfb', 'chromedriver', 'chrome']
+            for proc in psutil.process_iter():
+                if proc.name() in kill_processes:
+                    proc.kill()
     elif args.check:
         try:
             schedule.Schedule(config).check()
@@ -84,8 +90,18 @@ if __name__ == "__main__":
             ''')
     elif args.commit:
         schedule.Schedule(config).commit()
+        if config["LOCAL"] == 0:
+            kill_processes = ['Xvfb', 'chromedriver', 'chrome']
+            for proc in psutil.process_iter():
+                if proc.name() in kill_processes:
+                    proc.kill()
     elif args.clear:
         schedule.Schedule(config).clear()
     elif args.match_id:
         schedule.cron_job(config, args.match_id)
+        if config["LOCAL"] == 0:
+            kill_processes = ['Xvfb', 'chromedriver', 'chrome']
+            for proc in psutil.process_iter():
+                if proc.name() in kill_processes:
+                    proc.kill()
         
