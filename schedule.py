@@ -6,12 +6,15 @@ import os
 import logging
 import time
 import inquirer
+import traceback
 
 from os import path
 from pyvirtualdisplay import Display
 from random import uniform
 
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import WebDriverException
+from json.decoder import JSONDecodeError
 from datetime import datetime, timedelta
 from crontab import CronTab
 
@@ -36,11 +39,16 @@ class Update:
                     json.dump(games_list, outfile, indent=4)
                 time.sleep(uniform(3,6))
             except TimeoutException:
+                time.sleep(uniform(2,3))
+                continue
+            except WebDriverException:
+                time.sleep(uniform(2,3))
                 continue
             else:
                 break
         else:
-            logging.info('>> update failed after 3 attempts.')
+            logging.info(f'>> update failed after {i} attempts.')
+            display.stop()
             sys.exit()
         display.stop()
         return games_list
@@ -336,10 +344,25 @@ class Schedule:
         display = Display(visible=0, size=(1024, 768))
         display.start()
         for match in matches_past:
-            scrape.Games(self.config).refresh_json(match)
+            for i in range(3):
+                try:
+                    scrape.Games(self.config).refresh_json(match)
+                except WebDriverException:
+                    logging.info(f'>> WebDriverException, retrying...')
+                    time.sleep(uniform(2,3))
+                    continue
+                except TimeoutException:
+                    logging.info(f'>> TimeoutException, retrying...')
+                    time.sleep(uniform(2,3))
+                except Exception:
+                    logging.info(traceback.format_exc())
+                    break
+                else:
+                    break
+            else:
+                logging.info(f'>> failed to update past matches after {i} attempts')
         display.stop()
         self.update_crontab(matches_to_schedule)
-
 
 def cron_job(config, match_id):
     """
@@ -356,6 +379,28 @@ def cron_job(config, match_id):
             pass
     display = Display(visible=0, size=(1024, 768))
     display.start()
-    scrape.Games(config).refresh_json((file_name,match_id))
+    for i in range(3):
+        try:
+            scrape.Games(config).refresh_json((file_name,match_id))
+        except JSONDecodeError:
+            logging.info(f'>> JSONDecodeError, retrying...')
+            time.sleep(uniform(5,6))
+            continue
+        except WebDriverException:
+            logging.info(f'>> WebDriverException, retrying...')
+            time.sleep(uniform(2,3))
+            continue
+        except TimeoutException:
+            logging.info(f'>> TimeoutException, retrying...')
+            time.sleep(uniform(2,3))
+        except Exception:
+            logging.info(traceback.format_exc())
+            break
+        else:
+            break
+    else:
+        logging.info(f'>> {match_id} update failed after {i} attempts')
+        display.stop()
+        sys.exit
     display.stop()
     logging.info(f'>> {file_name} updated')

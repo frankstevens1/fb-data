@@ -5,8 +5,6 @@ import json
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.common.exceptions import NoSuchElementException
 
@@ -47,7 +45,6 @@ class Games:
         # scrape match table html
         self.driver.get(self.url)
         sleep(uniform(2,3))
-        self.driver.save_screenshot(f'{self.test}ss0.png') # to check if request blocked by server
         ## start retry block
         for i in range(3):
             try:
@@ -66,7 +63,6 @@ class Games:
         ## end retry block
         match_table = self.driver.find_element(By.XPATH, '//*[@id="livescores"]/div/div')
         match_table_html = match_table.get_attribute('innerHTML')
-        self.driver.save_screenshot(f'{self.test}ss1.png') # to check if request blocked by server
         self.driver.quit()
         last_checked = datetime.utcnow()
         # parse html to json
@@ -145,7 +141,8 @@ class Games:
         if self.config["LOCAL"] == 1:
             os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
         else:
-            os.system("pkill chromium >> /dev/null 2>&1")
+            # os.system("pkill chromium >> /dev/null 2>&1")
+            pass
         return game_data_dict
 
     def refresh_json(self, match: tuple):
@@ -155,7 +152,6 @@ class Games:
         """
         url = self.config['URL_2'] % match[1]
         self.driver.get(url)
-        self.driver.save_screenshot(f'{self.test}ss3.png') # to check if request blocked by server
         content = self.driver.page_source
         content_string = content.replace('<html><head></head><body>', '')
         content_string = content_string.replace('</body></html>', '')
@@ -171,4 +167,5 @@ class Games:
         if self.config["LOCAL"] == 1:
             os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
         else:
-            os.system("pkill chromium >> /dev/null 2>&1")
+            # os.system("pkill chromium-browser >> /dev/null 2>&1")
+            pass

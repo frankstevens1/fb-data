@@ -11,7 +11,6 @@ import schedule
 from random import uniform
 
 from selenium.common.exceptions import WebDriverException
-from json.decoder import JSONDecodeError
 
 def parse_arguments():
     """
@@ -88,19 +87,5 @@ if __name__ == "__main__":
     elif args.clear:
         schedule.Schedule(config).clear()
     elif args.match_id:
-        for i in range(3):
-            try:
-                schedule.cron_job(config, args.match_id)
-            except JSONDecodeError:
-                logging.info(f'>> JSONDecodeError, retrying...')
-                time.sleep(uniform(5,6))
-                continue
-            except Exception:
-                logging.info(traceback.format_exc())
-                sys.exit()
-            else:
-                break
-        else:
-            logging.info(f'>> {args.match_id} update failed after 3 attempts')
-            sys.exit()
+        schedule.cron_job(config, args.match_id)
         
