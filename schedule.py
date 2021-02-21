@@ -1,7 +1,6 @@
 import scrape
 
 import json
-import sys
 import os
 import logging
 import time
@@ -9,12 +8,10 @@ import inquirer
 import traceback
 
 from os import path
-from pyvirtualdisplay import Display
 from random import uniform
 
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import WebDriverException
-from json.decoder import JSONDecodeError
 from datetime import datetime, timedelta
 from crontab import CronTab
 
@@ -28,9 +25,8 @@ class Update:
 
     def update(self):
         """
+        updates the games_list.json cache
         """
-        display = Display(visible=0, size=(1024, 768))
-        display.start()
         games_list = []
         for i in range(3):
             try:
@@ -47,14 +43,12 @@ class Update:
             else:
                 break
         else:
-            logging.info(f'>> update failed after {i} attempts.')
-            display.stop()
-            sys.exit()
-        display.stop()
+            logging.info(f'>> update failed after {i+1} attempts.')
         return games_list
     
     def games_list(self):
         """
+        returns latest games_list
         """
         cache = path.exists('./games_list.json')
         if cache:
@@ -63,15 +57,14 @@ class Update:
             json_file.close()
             last_checked = datetime.strptime(games_list["LAST_CHECKED"], "%d/%m/%Y %H:%M:%S")
             next_start = datetime.strptime(games_list["NEXT_START"], "%d/%m/%Y %H:%M:%S")
-            last_start = datetime.strptime(games_list["NEXT_START"], "%d/%m/%Y %H:%M:%S")
+            last_start = datetime.strptime(games_list["LAST_START"], "%d/%m/%Y %H:%M:%S")
             time_delta = next_start - last_checked
             if last_checked.day < datetime.utcnow().day:
                 games_list = self.update()
+            elif datetime.utcnow() - last_checked  > time_delta and datetime.utcnow() < last_start:
+                games_list = self.update()
             else:
-                if datetime.utcnow() - last_checked  > time_delta and datetime.utcnow() < last_start:
-                    games_list = self.update()
-                else:
-                    pass
+                pass # don't update
         else:
             games_list = self.update()
         return games_list
@@ -341,8 +334,6 @@ class Schedule:
         committed_schedule = self.refresh_jobs()
         matches_past = committed_schedule["MATCHES_PAST"]
         matches_to_schedule = committed_schedule["SCHEDULE"]
-        display = Display(visible=0, size=(1024, 768))
-        display.start()
         for match in matches_past:
             for i in range(3):
                 try:
@@ -362,7 +353,6 @@ class Schedule:
                     break
             else:
                 logging.info(f'>> failed to update past matches after {i+1} attempts')
-        display.stop()
         self.update_crontab(matches_to_schedule)
 
 def cron_job(config, match_id):
@@ -378,8 +368,6 @@ def cron_job(config, match_id):
             file_name = guid.replace('/','').replace(':','')
         else:
             pass
-    display = Display(visible=0, size=(1024, 768))
-    display.start()
     for i in range(3):
         try:
             scrape.Games(config).refresh_json((file_name,match_id))
@@ -397,8 +385,8 @@ def cron_job(config, match_id):
             updated = 'not updated'
             break
         else:
+            updated = 'not updated'
             break
     else:
-        logging.info(f'>> failed to update past matches after {i+1} attempts')
-    display.stop()
+        updated = f'update failed after {i+1} attempts'
     logging.info(f'>> {file_name} {updated}')
