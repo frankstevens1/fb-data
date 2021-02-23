@@ -74,14 +74,12 @@ if __name__ == "__main__":
         config = json.load(json_file)
     json_file.close()
     # create directories
-    try:
-        os.mkdir('./games')
-    except FileExistsError:
-        pass
-    try:
-        os.mkdir('./logs')
-    except FileExistsError:
-        pass
+    directories = ['./games', './games/csv', './games/json', './logs']
+    for directory in directories:
+        try:
+            os.mkdir(directory)
+        except FileExistsError:
+            pass
     # setup logging
     logging.basicConfig(handlers=[logging.FileHandler(
         filename=f'./logs/log.txt', encoding='utf-8', mode='a+')],
