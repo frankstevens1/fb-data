@@ -48,13 +48,15 @@ Two data collection schedules are available. The _'at 90+ minutes'_ schedule sen
 |ko +  60 min (start 2nd)|✘   |✓|
 |ko +  75 min            |✘   |✓|
 |ko +  90 min            |✘   |✓|
-|ko + 105 min (FT)       |✓   |✓|
+|ko + 105 min (FT)       |✘   |✓|
 |ko + 120 min (ST)       |✓   |✓|
-|ko + 135 min (ET)       |✓   |✓|
-|ko + 150 min (ET)       |✓   |✓|
-|ko + 150 min (FT)       |✓   |✓|
-|ko + 165 min (ST)       |✓   |✓|
+|ko + 135 min (ET)       |✘   |✘|
+|ko + 150 min (ET)       |✘   |✘|
+|ko + 150 min (FT)       |✘   |✘|
+|ko + 165 min (ST)       |✘   |✘|
 |ko + 180 min            |✓   |✓|
+
+**NOTE!** If "OFF_SET" in config.json is set to 1, then an offset is applied to games that kick-off within the same hour (e.g. 19:00, 19:00 and 19:30). Game#1 is the game that is selected first from the games selection list. Game #1 will be scheduled to run at the normal schedule. Game#2 to Game#14 will have and offset of Game# - 1. This is used to avoid overloading a small EC2 instance with too many simultaneous data collection jobs.
 
 ### Commit selection
 
@@ -83,6 +85,22 @@ python3 main.py --clear
 ```
 
 ![gif](https://drive.google.com/uc?export=view&id=1GNr9Ufs4qWttCV6ErbowMtNRVcIojHc_)
+
+### Parse all
+
+Pass `--parse_all` to parse all games from json format to csv. All unparsed games in the ./games/json directory will be parsed and saved in ./games/csv directory.
+
+```bash
+python3 main.py --parse_all
+```
+
+### Kill all application related processes
+
+Pass `--kill_all` to kill all aplication related processes, including PyVirtualDisplay, Chromedriver & Chrome.
+
+```bash
+python3 main.py --kill_all
+```
 
 ### Cron table
 
@@ -187,7 +205,8 @@ notepad.exe config.json
     "URL_2": "PASTE URL_2 THAT I PROVIDED HERE",
     "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
     "USER_NAME": "ubuntu",
-    "LOCAL": 1
+    "LOCAL": 1,
+    "OFF_SET": 0
 }
 ```
 
@@ -278,7 +297,8 @@ A config file is required to use fb-data, it is a json file that contains the ur
     "URL_2": "PASTE URL_2 THAT I PROVIDED HERE",
     "USER_AGENT": "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/87.0.4280.88 Chrome/87.0.4280.88 Safari/537.36",
     "USER_NAME": "ubuntu",
-    "LOCAL": 0
+    "LOCAL": 0,
+    "OFF_SET": 1
 }
 ```
 

@@ -1,7 +1,8 @@
 {
     "URL_1": "PASTE URL_1 THAT I PROVIDED HERE",
     "URL_2": "PASTE URL_2 THAT I PROVIDED HERE",
-    "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36",
+    "USER_AGENT": "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/87.0.4280.88 Chrome/87.0.4280.88 Safari/537.36",
     "USER_NAME": "ubuntu",
-    "LOCAL": 1
+    "LOCAL": 0,
+    "OFF_SET": 1
 }

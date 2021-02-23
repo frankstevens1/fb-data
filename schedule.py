@@ -162,64 +162,70 @@ class Schedule:
             print(f'         {label}')
         print('')
     
-    def ninety_plus(self, date_time):
+    def ninety_plus(self, date_time, off_set):
         """
         take utc kick off time
         returns a tuple of (triggers, game_time)
         triggers are hour, minute combinations at which to trigger game data updates
         """
-        if self.config["LOCAL"] == 1:
-            td = datetime.now() - datetime.utcnow()
-            game_time = date_time + timedelta(hours=round(td.seconds / 3600, 1))
+        print(date_time)
+        if self.config["OFF_SET"] == 1:
+            if self.config["LOCAL"] == 1:
+                td = datetime.now() - datetime.utcnow()
+                game_time = date_time + timedelta(hours=round(td.seconds / 3600, 1))
+                gt_offset = game_time + timedelta(minutes=off_set)
+            else:
+                game_time = date_time
+                gt_offset = game_time + timedelta(minutes=off_set)
         else:
-            game_time = date_time
-        ninety = game_time + timedelta(hours=1, minutes=15)
-        triggers = [(ninety.hour, ninety.minute)]
-        t = ninety
-        for i in range(5):
-            t = t + timedelta(minutes=15)
-            triggers.append((t.hour, t.minute))
+            if self.config["LOCAL"] == 1:
+                td = datetime.now() - datetime.utcnow()
+                game_time = date_time + timedelta(hours=round(td.seconds / 3600, 1))
+                gt_offset = game_time
+            else:
+                game_time = date_time
+                gt_offset = game_time
+        # create list of scrape times
+        first = gt_offset + timedelta(minutes=120)
+        last = first + timedelta(minutes=60)
+        scrape_times = [first, last]
+        # generate list of triggers
+        triggers = []
+        for scrape_time in scrape_times:
+            triggers.append((scrape_time.hour, scrape_time.minute))
         return (triggers, game_time)
 
     def fifteen_minutes(self, date_time, off_set):
         """
-        take utc kick off time
+        take utc kick off time and an offset in minutes
         returns a tuple of (triggers, game_time)
         triggers are hour, minute combinations at which to trigger game data updates
         """
-        if self.config["LOCAL"] == 1:
-            td = datetime.now() - datetime.utcnow()
-            game_time = date_time + timedelta(hours=round(td.seconds / 3600, 1)) + timedelta(minutes=1*off_set)
-        else:
-            game_time = date_time + timedelta(minutes=1*off_set)
-        triggers = []
-        hours = []
-        for i in range(3):
-            hours.append(game_time + timedelta(hours=i+1))
-        hour_2 = hours[0].hour
-        hour_3 = hours[1].hour
-        hour_4 = hours[2].hour
-        if game_time.minute != 00:
-            d = 4
-        else:
-            d = 3
-        hours_list = []
-        for i in range(d+1):
-            hours_list.append(game_time + timedelta(hours=i))
-        for h in hours_list:
-            if h.hour == game_time.hour:
-                m = game_time.minute
-                lm = 60
-            elif h.hour == hour_2 or h.hour == hour_3:
-                m = 00
-                lm = 60
-            elif h.hour == hour_4:
-                m = 00
-                lm = game_time.minute + 1
+        if self.config["OFF_SET"] == 1:
+            if self.config["LOCAL"] == 1:
+                td = datetime.now() - datetime.utcnow()
+                game_time = date_time + timedelta(hours=round(td.seconds / 3600, 1))
+                gt_offset = game_time + timedelta(minutes=off_set)
             else:
-                break
-            for i in range(m, lm, 15):
-                triggers.append((h.hour,i))
+                game_time = date_time
+                gt_offset = game_time + timedelta(minutes=off_set)
+        else:
+            if self.config["LOCAL"] == 1:
+                td = datetime.now() - datetime.utcnow()
+                game_time = date_time + timedelta(hours=round(td.seconds / 3600, 1))
+                gt_offset = game_time
+            else:
+                game_time = date_time
+                gt_offset = game_time
+        # create list of scrape times
+        first_scrape = gt_offset + timedelta(minutes=15)
+        scrape_times = [first_scrape + timedelta(minutes=x) for x in range(0, 120, 15)]
+        last_scrape = gt_offset + timedelta(minutes=180)
+        scrape_times.append(last_scrape)
+        # generate list of triggers
+        triggers = []
+        for scrape_time in scrape_times:
+            triggers.append((scrape_time.hour, scrape_time.minute))
         return (triggers, game_time)
 
     def update_crontab(self, matches_to_schedule):
@@ -231,16 +237,32 @@ class Schedule:
         json_file.close()
         game_times = set()
         if user_selection["REFRESH_RATE"] == 'every 15 minutes': # 15 minute setting
-            off_set = 0
+            ko_hours = {}
             for data in matches_to_schedule.values():
-                schedule = self.fifteen_minutes(data["DATETIME"], off_set)
+                ko_hour = data["DATETIME"].hour
+                if ko_hour in list(ko_hours.keys()):
+                    schedule = self.fifteen_minutes(data["DATETIME"], ko_hours[ko_hour])
+                    ko_hours[ko_hour] += 1
+                else:
+                    schedule = self.fifteen_minutes(data["DATETIME"], 0)
+                    ko_hours[ko_hour] = 1
+                if ko_hours[ko_hour] >= 14:
+                    ko_hours[ko_hour] = 0
                 triggers = schedule[0]
                 game_times.add(schedule[1])
                 data["TRIGGERS"] = triggers
-                off_set += 1
-        else: # 90+ setting
+        else: # 90+ setting (unused)
+            ko_hours = {}
             for data in matches_to_schedule.values():
-                schedule = self.ninety_plus(data["DATETIME"])
+                ko_hour = data["DATETIME"].hour
+                if ko_hour in list(ko_hours.keys()):
+                    schedule = self.ninety_plus(data["DATETIME"], ko_hours[ko_hour])
+                    ko_hours[ko_hour] += 1
+                else:
+                    schedule = self.ninety_plus(data["DATETIME"], 0)
+                    ko_hours[ko_hour] = 1
+                if ko_hours[ko_hour] >= 14:
+                    ko_hours[ko_hour] = 0
                 triggers = schedule[0]
                 game_times.add(schedule[1])
                 data["TRIGGERS"] = triggers
