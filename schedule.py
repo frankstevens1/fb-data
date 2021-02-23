@@ -168,7 +168,6 @@ class Schedule:
         returns a tuple of (triggers, game_time)
         triggers are hour, minute combinations at which to trigger game data updates
         """
-        print(date_time)
         if self.config["OFF_SET"] == 1:
             if self.config["LOCAL"] == 1:
                 td = datetime.now() - datetime.utcnow()
@@ -266,7 +265,7 @@ class Schedule:
                 triggers = schedule[0]
                 game_times.add(schedule[1])
                 data["TRIGGERS"] = triggers
-        clear_cron = max(game_times) + timedelta(hours=3, minutes=1)
+        clear_cron = max(game_times) + timedelta(hours=3, minutes=35)
         my_cron = CronTab(user=self.config["USER_NAME"])
         job = my_cron.new(command=f'{os.getcwd()}/.venv/bin/python3 {os.getcwd()}/main.py --clear >> {os.getcwd()}/logs/cronerrors.txt 2>> {os.getcwd()}/logs/cronlogs.txt')
         job.set_comment('fb/cleanup')
