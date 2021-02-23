@@ -3,8 +3,10 @@ import logging
 import json
 import os
 import psutil
+import glob
 
 import schedule
+import parse
 
 from pyvirtualdisplay import Display
 
@@ -26,8 +28,26 @@ def parse_arguments():
                         help="used by cron to run update for match_id X")
     action.add_argument('--kill', action='store_true',
                         help="kill all application related processes")
+    action.add_argument('--parse_all', action='store_true',
+                        help="parses all json files in ./games/json")
     arguments = parser.parse_args()
     return arguments
+
+def parse_all():
+    """
+    """
+    pdir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(f"{pdir}/games/csv")
+    files = []
+    for file in glob.glob("*.csv"):
+        files.append(file[:-4])
+    os.chdir(f"{pdir}/games/json")
+    unparsed = []
+    for file in glob.glob("*.json"):
+        if file[:-5] not in files:
+            unparsed.append(file[:-5])
+    for json_file in unparsed:
+        parse.Parse(json_file).dataframe()
 
 def kill_all(config):
     """
@@ -88,6 +108,7 @@ if __name__ == "__main__":
         schedule.Schedule(config).commit()
         display.stop()
         kill_all(config)
+        parse_all()
     elif args.clear:
         schedule.Schedule(config).clear()
         kill_all(config)
@@ -96,10 +117,16 @@ if __name__ == "__main__":
         schedule.cron_job(config, args.match_id)
         display.stop()
         kill_all(config)
+        parse_all()
     elif args.kill:
         kill_all(config)
         print('''
         All processes related to application killed.
+            ''')
+    elif args.parse_all:
+        parse_all()
+        print('''
+        All json game data has been parsed to csv.
             ''')
 
         

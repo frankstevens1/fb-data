@@ -3,6 +3,7 @@ from main import kill_all
 
 import json
 import os
+import sys
 import logging
 import time
 import inquirer
@@ -15,7 +16,6 @@ from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import WebDriverException
 from datetime import datetime, timedelta
 from crontab import CronTab
-
 
 class Update:
     """
@@ -189,9 +189,9 @@ class Schedule:
         """
         if self.config["LOCAL"] == 1:
             td = datetime.now() - datetime.utcnow()
-            game_time = date_time + timedelta(hours=round(td.seconds / 3600, 1))
+            game_time = date_time + timedelta(hours=round(td.seconds / 3600, 1)) + timedelta(minutes=1*off_set)
         else:
-            game_time = date_time
+            game_time = date_time + timedelta(minutes=1*off_set)
         triggers = []
         hours = []
         for i in range(3):
@@ -219,7 +219,7 @@ class Schedule:
             else:
                 break
             for i in range(m, lm, 15):
-                triggers.append((h.hour,i+off_set))
+                triggers.append((h.hour,i))
         return (triggers, game_time)
 
     def update_crontab(self, matches_to_schedule):
@@ -231,13 +231,13 @@ class Schedule:
         json_file.close()
         game_times = set()
         if user_selection["REFRESH_RATE"] == 'every 15 minutes': # 15 minute setting
-            i = 0
+            off_set = 0
             for data in matches_to_schedule.values():
-                schedule = self.fifteen_minutes(data["DATETIME"], i)
+                schedule = self.fifteen_minutes(data["DATETIME"], off_set)
                 triggers = schedule[0]
                 game_times.add(schedule[1])
                 data["TRIGGERS"] = triggers
-                i += 1
+                off_set += 1
         else: # 90+ setting
             for data in matches_to_schedule.values():
                 schedule = self.ninety_plus(data["DATETIME"])
@@ -353,10 +353,12 @@ class Schedule:
                     continue
                 except Exception:
                     logging.info(traceback.format_exc())
-                    updated = 'not updated'
+                    kill_all()
+                    sys.exit()
+                else:
                     break
             else:
-                updated = f'{match[0]} update failed after {i+1} attempts'
+                updated = f'update failed after {i+1} attempts'
             logging.info(f'>> {match[0]} {updated}')
         self.update_crontab(matches_to_schedule)
 
@@ -389,7 +391,9 @@ def cron_job(config, match_id):
             continue
         except Exception:
             logging.info(traceback.format_exc())
-            updated = 'not updated'
+            kill_all()
+            sys.exit()
+        else:
             break
     else:
         updated = f'update failed after {i+1} attempts'
