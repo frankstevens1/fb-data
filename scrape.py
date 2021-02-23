@@ -146,7 +146,7 @@ class Games:
     def refresh_json(self, match: tuple):
         """
         takes a tuple of (guid, match_id)
-        saves match data in /project_path/games/{guid}.json
+        saves match data in /project_path/games/json/{guid}.json
         """
         url = self.config['URL_2'] % match[1]
         self.driver.get(url)
@@ -156,7 +156,7 @@ class Games:
         file_name = match[0]
         try:
             json_data = json.loads(content_string)
-            with open(f'{os.getcwd()}/games/{file_name}.json', 'w+') as json_file:
+            with open(f'{os.getcwd()}/games/json/{file_name}.json', 'w+') as json_file:
                 json.dump(json_data, json_file, indent=4)
             json_file.close()
         except JSONDecodeError:
