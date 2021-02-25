@@ -364,17 +364,17 @@ class Schedule:
                     updated = 'updated'
                 except WebDriverException:
                     logging.info(f'>> WebDriverException, retrying...')
-                    kill_all()
+                    kill_all(self.config)
                     time.sleep(uniform(3,5))
                     continue
                 except TimeoutException:
                     logging.info(f'>> TimeoutException, retrying...')
-                    kill_all()
+                    kill_all(self.config)
                     time.sleep(uniform(3,5))
                     continue
                 except Exception:
                     logging.info(traceback.format_exc())
-                    kill_all()
+                    kill_all(self.config)
                     sys.exit()
                 else:
                     break
@@ -402,17 +402,17 @@ def cron_job(config, match_id):
             updated = 'updated'
         except WebDriverException:
             logging.info(f'>> WebDriverException, retrying...')
-            kill_all()
+            kill_all(config)
             time.sleep(uniform(3,5))
             continue
         except TimeoutException:
             logging.info(f'>> TimeoutException, retrying...')
-            kill_all()
+            kill_all(config)
             time.sleep(uniform(3,5))
             continue
         except Exception:
             logging.info(traceback.format_exc())
-            kill_all()
+            kill_all(config)
             sys.exit()
         else:
             break

@@ -104,18 +104,18 @@ if __name__ == "__main__":
     elif args.commit:
         display.start()
         schedule.Schedule(config).commit()
+        parse_all()
         display.stop()
         kill_all(config)
-        parse_all()
     elif args.clear:
         schedule.Schedule(config).clear()
         kill_all(config)
     elif args.match_id:
         display.start()
         schedule.cron_job(config, args.match_id)
+        parse_all()
         display.stop()
         kill_all(config)
-        parse_all()
     elif args.kill:
         kill_all(config)
         print('''
