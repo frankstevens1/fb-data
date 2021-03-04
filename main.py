@@ -37,17 +37,9 @@ def parse_all():
     """
     """
     pdir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(f"{pdir}/games/csv")
-    files = []
-    for file in glob.glob("*.csv"):
-        files.append(file[:-4])
     os.chdir(f"{pdir}/games/json")
-    unparsed = []
-    for file in glob.glob("*.json"):
-        if file[:-5] not in files:
-            unparsed.append(file[:-5])
-    for json_file in unparsed:
-        parse.Parse(json_file).dataframe()
+    for json_file in glob.glob("*.json"):
+        parse.Parse(json_file[:-5]).dataframe()
 
 def kill_all(config):
     """
