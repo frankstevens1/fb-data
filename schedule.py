@@ -260,12 +260,15 @@ class Schedule:
                 triggers = schedule[0]
                 game_times.add(schedule[1])
                 data["TRIGGERS"] = triggers
-        clear_cron = max(game_times) + timedelta(hours=3, minutes=35)
         my_cron = CronTab(user=self.config["USER_NAME"])
-        job = my_cron.new(command=f'{os.path.dirname(os.path.realpath(__file__))}/.venv/bin/python3 {os.path.dirname(os.path.realpath(__file__))}/main.py --clear >> {os.path.dirname(os.path.realpath(__file__))}/logs/cronerrors.txt 2>> {os.path.dirname(os.path.realpath(__file__))}/logs/cronlogs.txt')
-        job.set_comment('fb/cleanup')
-        job.setall(clear_cron.minute, clear_cron.hour, clear_cron.day, clear_cron.month, None)
-        my_cron.write()
+        try:
+            clear_cron = max(game_times) + timedelta(hours=3, minutes=35)
+            job = my_cron.new(command=f'{os.path.dirname(os.path.realpath(__file__))}/.venv/bin/python3 {os.path.dirname(os.path.realpath(__file__))}/main.py --clear >> {os.path.dirname(os.path.realpath(__file__))}/logs/cronerrors.txt 2>> {os.path.dirname(os.path.realpath(__file__))}/logs/cronlogs.txt')
+            job.set_comment('fb/cleanup')
+            job.setall(clear_cron.minute, clear_cron.hour, clear_cron.day, clear_cron.month, None)
+            my_cron.write()
+        except ValueError:
+            pass
         for comment,data in matches_to_schedule.items():
             i = 0
             for trigger in data["TRIGGERS"]:
