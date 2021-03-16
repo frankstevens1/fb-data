@@ -31,10 +31,10 @@ class Games:
         if self.config["LOCAL"] == 0:
             chromedriver = '/usr/bin/chromedriver'
         else:
-            chromedriver = f'{os.getcwd()}/chromedriver/chromedriver.exe'
+            chromedriver = f'{os.path.dirname(os.path.realpath(__file__))}/chromedriver/chromedriver.exe'
         self.driver = webdriver.Chrome(executable_path=chromedriver, options=self.options)
         self.url = self.config['URL_1']
-        self.test = f'{os.getcwd()}/test/'
+        self.test = f'{os.path.dirname(os.path.realpath(__file__))}/test/'
         
     def get_game_list(self):
         """
@@ -136,7 +136,7 @@ class Games:
         last_start = max(upcoming_kickoffs)
         game_data_dict['NEXT_START'] = next_start.strftime("%d/%m/%Y %H:%M:%S")
         game_data_dict['LAST_START'] = last_start.strftime("%d/%m/%Y %H:%M:%S")
-        logging.info(f'>> {os.getcwd()}/games_list.json updated')
+        logging.info(f'>> {os.path.dirname(os.path.realpath(__file__))}/games_list.json updated')
         if self.config["LOCAL"] == 1:
             os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
         else:
@@ -156,7 +156,7 @@ class Games:
         file_name = match[0]
         try:
             json_data = json.loads(content_string)
-            with open(f'{os.getcwd()}/games/json/{file_name}.json', 'w+') as json_file:
+            with open(f'{os.path.dirname(os.path.realpath(__file__))}/games/json/{file_name}.json', 'w+') as json_file:
                 json.dump(json_data, json_file, indent=4)
             json_file.close()
         except JSONDecodeError:

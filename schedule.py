@@ -267,7 +267,7 @@ class Schedule:
                 data["TRIGGERS"] = triggers
         clear_cron = max(game_times) + timedelta(hours=3, minutes=35)
         my_cron = CronTab(user=self.config["USER_NAME"])
-        job = my_cron.new(command=f'{os.getcwd()}/.venv/bin/python3 {os.getcwd()}/main.py --clear >> {os.getcwd()}/logs/cronerrors.txt 2>> {os.getcwd()}/logs/cronlogs.txt')
+        job = my_cron.new(command=f'{os.path.dirname(os.path.realpath(__file__))}/.venv/bin/python3 {os.path.dirname(os.path.realpath(__file__))}/main.py --clear >> {os.path.dirname(os.path.realpath(__file__))}/logs/cronerrors.txt 2>> {os.path.dirname(os.path.realpath(__file__))}/logs/cronlogs.txt')
         job.set_comment('fb/cleanup')
         job.setall(clear_cron.minute, clear_cron.hour, clear_cron.day, clear_cron.month, None)
         my_cron.write()
@@ -316,7 +316,7 @@ class Schedule:
                 pass # already scheduled
             else:
                 comment = 'fb/' + guid
-                command = f'{os.getcwd()}/.venv/bin/python3 {os.getcwd()}/main.py --cron {match_id} >> {os.getcwd()}/logs/cronerrors.txt 2>> {os.getcwd()}/logs/cronlogs.txt'
+                command = f'{os.path.dirname(os.path.realpath(__file__))}/.venv/bin/python3 {os.path.dirname(os.path.realpath(__file__))}/main.py --cron {match_id} >> {os.path.dirname(os.path.realpath(__file__))}/logs/cronerrors.txt 2>> {os.path.dirname(os.path.realpath(__file__))}/logs/cronlogs.txt'
                 date_time = datetime(now.year, now.month, int(guid[6:8]), int(guid[:2]), int(guid[3:5]))
                 if date_time + timedelta(minutes=90) < datetime.utcnow():
                     matches_past.append((guid.replace('/','').replace(':',''), match_id))
@@ -387,7 +387,7 @@ def cron_job(config, match_id):
     """
     used as the arugment when running updates from cron
     """
-    with open(f'{os.getcwd()}/user_selection.json') as json_file: 
+    with open(f'{os.path.dirname(os.path.realpath(__file__))}/user_selection.json') as json_file: 
         user_schedule = json.load(json_file)
     json_file.close()
     file_name = None

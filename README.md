@@ -194,7 +194,7 @@ Some configuration settings need to be set in order to use fb-data. The project 
 - To edit `config_sample.json` in notepad run:
 
 ```bash
-notepad.exe config.json
+notepad.exe config_sample.json
 ```
 
 - `config_sample.json` is structured as follows, replace the values for "URL_1", "URL_2" & "USER_NAME" and save it as `config.json`.
