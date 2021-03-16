@@ -98,7 +98,6 @@ class Games:
             else:
                 link_text = ''
                 league = ''
-
             if link_text != '':
                 match_id = int(re.search(r'\d{7}', link_text).group())
                 try:
@@ -132,13 +131,20 @@ class Games:
                 game_data_dict["GAME_DATA"][guid]["AWAY"] = away.rstrip().lstrip()
                 game_data_dict["GAME_DATA"][guid]["MATCH_ID"] = match_id
                 game_data_dict["GAME_DATA"][guid]["LEAGUE"] = league.replace('-', ' ').rstrip().lstrip()
-        next_start = min(upcoming_kickoffs)
-        last_start = max(upcoming_kickoffs)
-        game_data_dict['NEXT_START'] = next_start.strftime("%d/%m/%Y %H:%M:%S")
-        game_data_dict['LAST_START'] = last_start.strftime("%d/%m/%Y %H:%M:%S")
+        try:
+            next_start = min(upcoming_kickoffs)
+            last_start = max(upcoming_kickoffs)
+            game_data_dict['NEXT_START'] = next_start.strftime("%d/%m/%Y %H:%M:%S")
+            game_data_dict['LAST_START'] = last_start.strftime("%d/%m/%Y %H:%M:%S")
+        except ValueError:
+            next_start = None
+            last_start = None
+            game_data_dict['NEXT_START'] = next_start
+            game_data_dict['LAST_START'] = last_start
         logging.info(f'>> {os.path.dirname(os.path.realpath(__file__))}/games_list.json updated')
         if self.config["LOCAL"] == 1:
             os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
+            os.system(f"taskkill.exe /F /IM chromedriver.exe >> /dev/null 2>&1")
         else:
             pass
         return game_data_dict
@@ -164,5 +170,6 @@ class Games:
         self.driver.quit()
         if self.config["LOCAL"] == 1:
             os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
+            os.system(f"taskkill.exe /F /IM chromedriver.exe >> /dev/null 2>&1")
         else:
             pass
