@@ -2,7 +2,6 @@
 .git/
 __pycache__/
 test/
-json/
 docs/
 games/
 logs/
@@ -10,6 +9,7 @@ keys/
 config.json
 games_list.json
 user_selection.json
+fbdata_update.sh
 
 test.py
 

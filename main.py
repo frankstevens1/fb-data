@@ -79,9 +79,11 @@ if __name__ == "__main__":
         level=logging.INFO)
     # run requested function
     if args.games:
-        display.start()
+        if config["LOCAL"] == 0:
+            display.start()
         games_list = schedule.Update(config).games_list()
-        display.stop()
+        if config["LOCAL"] == 0:
+            display.stop()
         kill_all(config)
         game_data = games_list["GAME_DATA"]
         schedule.Schedule(config).prompt(game_data)
@@ -94,18 +96,22 @@ if __name__ == "__main__":
         Run --games to view games available
             ''')
     elif args.commit:
-        display.start()
+        if config["LOCAL"] == 0:
+            display.start()
         schedule.Schedule(config).commit()
-        display.stop()
+        if config["LOCAL"] == 0:
+            display.stop()
         kill_all(config)
         parse_all()
     elif args.clear:
         schedule.Schedule(config).clear()
         kill_all(config)
     elif args.match_id:
-        display.start()
+        if config["LOCAL"] == 0:
+            display.start()
         schedule.cron_job(config, args.match_id)
-        display.stop()
+        if config["LOCAL"] == 0:
+            display.stop()
         kill_all(config)
         parse_all()
     elif args.kill:
