@@ -57,12 +57,7 @@ class Update:
                 games_list = json.load(json_file)
             json_file.close()
             last_checked = datetime.strptime(games_list["LAST_CHECKED"], "%d/%m/%Y %H:%M:%S")
-            next_start = datetime.strptime(games_list["NEXT_START"], "%d/%m/%Y %H:%M:%S")
-            last_start = datetime.strptime(games_list["LAST_START"], "%d/%m/%Y %H:%M:%S")
-            time_delta = next_start - last_checked
             if last_checked.date() < datetime.utcnow().date():
-                games_list = self.update()
-            elif datetime.utcnow() - last_checked  > time_delta and datetime.utcnow() < last_start:
                 games_list = self.update()
             else:
                 pass # don't update

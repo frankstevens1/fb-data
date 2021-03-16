@@ -122,8 +122,6 @@ class Games:
                 home = ''
                 away = ''      
             if start_time != '' and start_time > t_minus and home != '' and away != '' and match_id != '':
-                if start_time > datetime.utcnow():
-                    upcoming_kickoffs.append(start_time)
                 guid = f"{start_time.strftime('%H:%M-%d/%m/%Y')}-{home.rstrip().lstrip()}-{away.rstrip().lstrip()}".replace(' ', '_')
                 game_data_dict["GAME_DATA"][guid] = {}
                 game_data_dict["GAME_DATA"][guid]["START_TIME"] = start_time.strftime("%d/%m/%Y %H:%M:%S")
@@ -131,16 +129,6 @@ class Games:
                 game_data_dict["GAME_DATA"][guid]["AWAY"] = away.rstrip().lstrip()
                 game_data_dict["GAME_DATA"][guid]["MATCH_ID"] = match_id
                 game_data_dict["GAME_DATA"][guid]["LEAGUE"] = league.replace('-', ' ').rstrip().lstrip()
-        try:
-            next_start = min(upcoming_kickoffs)
-            last_start = max(upcoming_kickoffs)
-            game_data_dict['NEXT_START'] = next_start.strftime("%d/%m/%Y %H:%M:%S")
-            game_data_dict['LAST_START'] = last_start.strftime("%d/%m/%Y %H:%M:%S")
-        except ValueError:
-            next_start = None
-            last_start = None
-            game_data_dict['NEXT_START'] = next_start
-            game_data_dict['LAST_START'] = last_start
         logging.info(f'>> {os.path.dirname(os.path.realpath(__file__))}/games_list.json updated')
         if self.config["LOCAL"] == 1:
             os.system(f"taskkill.exe /F /IM chrome.exe >> /dev/null 2>&1")
