@@ -28,6 +28,8 @@ class Games:
         self.options.add_argument('--disable-dev-shm-usage')
         self.options.add_argument(f"user-agent={self.config['USER_AGENT']}")
         self.options.add_argument('--no-sandbox')
+        if self.config["LOCAL"] == 1:
+            self.options.add_argument('--headless')
         if self.config["LOCAL"] == 0:
             chromedriver = '/usr/bin/chromedriver'
         else:
