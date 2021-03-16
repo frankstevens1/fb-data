@@ -82,8 +82,6 @@ class Games:
             # "NEXT_START": timedelta string
             }
         ## append values
-        upcoming_kickoffs = []
-        t_minus = last_checked - timedelta(minutes=180)
         for row in soup.find_all("div"):            
             match_centre_link = row.find('a', class_="match-link rc live")
             match_preview_link = row.find('a', class_="match-link rc preview")
@@ -123,7 +121,7 @@ class Games:
                 start_time = ''
                 home = ''
                 away = ''      
-            if start_time != '' and start_time > t_minus and home != '' and away != '' and match_id != '':
+            if start_time != '' and home != '' and away != '' and match_id != '':
                 guid = f"{start_time.strftime('%H:%M-%d/%m/%Y')}-{home.rstrip().lstrip()}-{away.rstrip().lstrip()}".replace(' ', '_')
                 game_data_dict["GAME_DATA"][guid] = {}
                 game_data_dict["GAME_DATA"][guid]["START_TIME"] = start_time.strftime("%d/%m/%Y %H:%M:%S")
