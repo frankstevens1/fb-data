@@ -1,5 +1,7 @@
 # fb-data
 
+fb-data is tool to schedule periodic scarping of football game statistics. The sites from which fb-data scrapes the data are not made public in this repository, therefore the script will not work unless you obtain those URLs. Upon request, I will consider providing them.
+
 ## Setup
 
 This guide covers setup on Windows 10 with WSL and on an EC2 instance on AWS. Choose the desired setup:
