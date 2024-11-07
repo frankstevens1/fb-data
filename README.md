@@ -1,6 +1,6 @@
 # fb-data
 
-fb-data is a tool to schedule periodic scraping of football game statistics. The sites from which fb-data scrapes the data are not made public in this repository, therefore the script will not work unless you obtain those URLs. Upon request, I will consider providing them.
+fb-data is a tool to schedule periodic scraping of football game statistics. The sites from which fb-data scrapes the data are not made public in this repository, therefore the script will not work unless you obtain those URLs. Upon request, I will provide them.
 
 ## Setup
 
